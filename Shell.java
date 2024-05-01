@@ -21,7 +21,7 @@ class ShellSort {
     }
 }
 
-public class Main {
+public class Shell {
     public static void main(String[] args) {
         int arr[] = {12, 34, 54, 2, 3};
         ShellSort ss = new ShellSort();
