@@ -1,231 +1,82 @@
-#include<iostream>
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stack>
+
 using namespace std;
-class graph
-{
-       int a[10][10],vcnt,Rcnt;
-       int v[20];
-       public:
-              graph()
-              {
-                     Rcnt = 0;
-                     vcnt=0;
-              }
-              void read_adjacency();
-              void display_adjacency();
-              void BFS();
-              void DFS();
-              int search(int);
-           
-};
-void graph::read_adjacency()
-{
-       cout<<"Enter vertex count :";
-       cin>>vcnt;
-       for(int i=1;i<=vcnt;i++)
-       {
-              for(int j=1;j<=vcnt;j++)
-              {
-                     cout<<"Enter edge "<<i<<"to"<<j<<":";
-                     cin>>a[i][j];
-              }
-       }
-}
-void graph::display_adjacency()
-{
-       for(int i=1;i<=vcnt;i++)
-       {
-              for(int j=1;j<=vcnt;j++)
-              {
-                     cout<<a[i][j]<<"  ";
-              }
-              cout<<"\n";
-       }
+
+// Function to add an edge in an undirected graph.
+void addEdge(vector<vector<int>>& adj, int u, int v) {
+    adj[u][v] = 1;
+    adj[v][u] = 1;
 }
 
-class Queue
-{
-       int a[20],f,r;
-       public:
-       Queue()
-       {
-              f=0;
-              r=0;
-       }
-       void insert(int key);
-       int Delete();
- };
 
- void Queue::insert(int key)
- {
-       if(r!=20)
-       {
-              a[r++]=key;
-       }
-       else
-       {
-              cout<<"Queue is full ";
-       }
- }
+// Function to perform DFS on the graph
+void DFS(vector<vector<int>>& adj, int v, int start) {
+    vector<bool> visited(v, false);
+    stack<int> stack;
+    stack.push(start);
 
- int Queue::Delete()
- {
-       if(f!=r)
-       {
-              return (a[f++]);
-       }
-       else
-       {
-              cout<<"Queue is Empty ";
-       }
+    while (!stack.empty()) {
+        start = stack.top();
+        stack.pop();
+
+        if (!visited[start]) {
+            cout << start << " ";
+            visited[start] = true;
+        }
+
+        for (int i = 0; i < v; i++)
+            if (adj[start][i] && !visited[i])
+                stack.push(i);
 }
- 
- class stack
- {
-       int a[20],top;
-       public:
-              stack()
-              {
-               top=-1;
-              }
-              void push(int key);
-              int pop();
-};
-void stack::push(int key)
-{
-       if(top!=20)
-       {
-              a[++top]=key;
-       }
-       else
-       {
-              cout<<"Stack is full ";
-       }
-}
-int stack::pop()
-{
-       if(top!=-1)
-       {
-              return(a[top--]);
-       }
-       else
-       {
-              cout<<"Stack is Empty";
-       }
 }
 
-int graph::search(int key)
-{
-       int i;
-
-       for(i = 0; i<Rcnt; i++)
-       {
-              if(v[i] == key)
-              {
-                     return(1);
-              }
-       }
-       if(i == Rcnt )
-       {
-              return(0);
-       }
-}       
-
-
-
-void graph::BFS()
-{
-       int sv,curr;
-
-       cout<<"Enter starting vertex ";
-       cin>>sv;
-       v[Rcnt++]=sv;
-       
-       Queue q;
-       q.insert(sv);
-
-       for(int i=1; i<=vcnt; i++)
-       {
-              curr=q.Delete();
-
-              for(int c=1;c<=vcnt;c++)
-              {
-                     if(a[curr][c]==1) 
-                     {
-                  	q.insert(c);
-                     	if(search(c)==0)
-                     	{	               
-                            v[Rcnt++]=c;
-                       	}
-                     }
-              }
-       }
-
-       cout<<"BFS=";
-       for(int i=0;i<Rcnt;i++)
-       {
-       		cout<<"   "<<v[i];
-       }
-
+// Function to perform BFS on the graph
+void BFS(vector<vector<int>>& adj, int v, int start) {
+    vector<bool> visited(v, false);
+    queue<int> q;
+    cout<<start<<" ";
+    visited[start] = true;
+    q.push(start);
+    while (!q.empty()) {
+        start = q.front();
+        q.pop();
+        for (int i = 0; i < v; i++) {
+            if (adj[start][i] == 1 && !visited[i]) {
+                cout<<i<<" ";
+                visited[i] = true;
+                q.push(i);
+            }
+        }
+    }
 }
-       
 
-void graph::DFS()
-{
-       int sv,curr;
 
-       cout<<"Enter starting vertex ";
-       cin>>sv;
-       v[Rcnt++]=sv;
-       
-       stack s;
-       s.push(sv);
+int main() {
+    int V;
+    cout << "Enter the number of vertices: ";
+    cin >> V;
 
-       for(int i=1; i<=vcnt; i++)
-       {
-              curr=s.pop();
+    vector<vector<int>> adj(V, vector<int>(V, 0));
 
-              for(int c=1;c<=vcnt;c++)
-              {
-                     if(a[curr][c]==1) 
-                     {
-                  	s.push(c);
-                     	if(search(c)==0)
-                     	{	               
-                            v[Rcnt++]=c;
-                       	}
-                     }
-              }
-       }
+    cout << "Enter the adjacency matrix:\n";
+    for(int i = 0; i < V; i++) {
+        for(int j = 0; j < V; j++) {
+            cin >> adj[i][j];
+        }
+    }
 
-       cout<<"\nDFS=";
-       for(int i=0;i<Rcnt;i++)
-       {
-       		cout<<"   "<<v[i];
-       }
-}
-       
+    int start;
+    cout << "Enter the starting node for DFS and BFS: ";
+    cin >> start;
 
-int main()
-{
-       int choice,key;
-       graph obj;
-       Queue q;
-       stack s;
-       obj.read_adjacency();
-       obj.display_adjacency();
-       do
-       {
-	       cout<<"\nMenu\n1.BFS\n2.DFS\n Enter choice ";
-	       cin>>choice;
-	       switch(choice)
-	       {
-		      case 1:
-		                    obj.BFS();
-		       break;                           
-		       case 2:
-		                    obj.DFS();
-		       break;                              
-	       }
-       }while(choice!=3);
-       return 0;
+    cout << "DFS traversal starting from node " << start << ": ";
+    DFS(adj, V, start);
+
+    cout << "\nBFS traversal starting from node " << start << ": ";
+    BFS(adj, V, start);
+
+    return 0;
 }

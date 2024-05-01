@@ -1,178 +1,142 @@
-#include <iostream>
+#include<iostream>
 using namespace std;
 
-struct Node
-{
+class node{
+    public:
     int data;
-    Node *left;
-    Node *right;
+    node* left;
+    node* right;
+
+
+    node(){ //default constructor
+        data = 0;
+        left = NULL;
+        right = NULL;
+    }
+    node(int val){ //parametrised constructor
+        data = val;
+        left = NULL;
+        right = NULL;
+    }
 };
 
-Node *createNode(int value)
-{
-    Node *newNode = new Node();
-    if (newNode)
-    {
-        newNode->data = value;
-        newNode->left = newNode->right = nullptr;
+class BST{
+    public:
+    node* root;
+    int cnt;
+
+    BST(){
+        root = NULL;
+        cnt = 0;
     }
-    return newNode;
+
+    void insert(int x); //  
+    void min_node();//
+    void max_node(); //
+    void search(node* root, int key);
+    void inorder(node* root); //
+    void mirror(node* root); //
+
+
+    int height(node*root , int&diameter){
+        if(!root) return 0;
+
+    int lh = height(root->left, diameter);
+    int rh = height(root->right, diameter);
+
+    diameter = max(diameter,lh+rh); //updating diameter variable
+    return 1+max(lh,rh); //returns height
+    }
+    
+    int longestpath(node* root){
+    int diameter = 0;
+    this->height(root, diameter);
+    return diameter-1;
+    }
+};
+
+void BST::insert(int x){
+    
+    node*t = root;
+    node*p , *q;
+
+    if(root ==NULL){
+        p = new node(x);
+        root = p;
+        return;
+    }
+    while( t != NULL){
+        q = t;
+        if(x < t->data) t = t->left;
+        else if (x > t->data) t = t->right;
+        else return;
+
+    }
+    p = new node(x);
+    if(x < q->data) q->left = p;
+    else q->right = p;
+
+// time complexity : O(h)
 }
 
-Node *insertNode(Node *root, int value)
-{
-    if (root == nullptr)
-    {
-        root = createNode(value);
-        return root;
-    }
-
-    if (value < root->data)
-    {
-        root->left = insertNode(root->left, value);
-    }
-    else if (value > root->data)
-    {
-        root->right = insertNode(root->right, value);
-    }
-
-    return root;
-}
-
-int findLongestPath(Node *root)
-{
-    if (root == nullptr)
-    {
-        return 0;
-    }
-
-    int leftPath = findLongestPath(root->left);
-    int rightPath = findLongestPath(root->right);
-
-    return max(leftPath, rightPath) + 1;
-}
-
-int findMinimumValue(Node *root)
-{
-    if (root == nullptr)
-    {
-        cout << "Error: Tree is empty." << endl;
-        return -1;
-    }
-
-    while (root->left != nullptr)
-    {
-        root = root->left;
-    }
-
-    return root->data;
-}
-
-Node *swapLeftRight(Node *root)
-{
-    if (root == nullptr)
-    {
-        return nullptr;
-    }
-
-    Node *temp = root->left;
-    root->left = root->right;
-    root->right = temp;
-
-    swapLeftRight(root->left);
-    swapLeftRight(root->right);
-
-    return root;
-}
-
-bool searchValue(Node *root, int value)
-{
-    if (root == nullptr)
-    {
-        return false;
-    }
-
-    if (root->data == value)
-    {
-        return true;
-    }
-    else if (value < root->data)
-    {
-        return searchValue(root->left, value);
-    }
-    else
-    {
-        return searchValue(root->right, value);
+void BST::inorder(node* root){
+    if(root){
+    inorder(root->left);
+    cout<<root->data<<" ";
+    inorder(root->right);
     }
 }
 
-int main()
-{
-    Node *root = nullptr;
+void BST::min_node(){
+    node* t = root;
+    while(t->left){
+        t = t->left;
+    }
+    cout<<"\n Smallest : "<<t->data;
+}
+void BST::max_node(){
+    node*t = root;
+    while(t->right){
+        t = t->right;
+    }
+    cout<<"\n Largest: "<<t->data;
+}
 
-    // Construct binary search tree by inserting values
-    // in the order given
-    // Example:
-    // root = insertNode(root, 5);
-    // root = insertNode(root, 3);
-    // root = insertNode(root, 7);
-    // root = insertNode(root, 2);
-    // root = insertNode(root, 4);
-    // root = insertNode(root, 6);
-    // root = insertNode(root, 8);
+void BST::mirror(node* root){
 
-    int choice;
-    int value;
+    node* t;
+    if(root){
+        t = root->left;
+        root->left = root->right;
+        root->right = t;
+        mirror(root->left);
+        mirror(root->right);
+    }
+}
 
-    do
-    {
-        cout << "Menu:" << endl;
-        cout << "1. Insert new node" << endl;
-        cout << "2. Find number of nodes in longest path from root" << endl;
-        cout << "3. Minimum data value found in the tree" << endl;
-        cout << "4. Mirror" << endl;
-        cout << "5. Search a value" << endl;
-        cout << "0. Exit" << endl;
-        cout << "Enter your choice: ";
-        cin >> choice;
+int main(){
+    BST tree;
+    tree.insert(30);
+    tree.insert(20);
+    tree.insert(35);
+    tree.insert(15);
+    tree.insert(25);
+    tree.insert(33);
+    tree.insert(37);
+    tree.inorder(tree.root);
+    tree.min_node();
+    tree.max_node();
 
-        switch (choice)
-        {
-        case 1:
-            cout << "Enter the value to insert: ";
-            cin >> value;
-            root = insertNode(root, value);
-            break;
-        case 2:
-            cout << "Number of nodes in longest path from root: " << findLongestPath(root) << endl;
-            break;
-        case 3:
-            cout << "Minimum data value found in the tree: " << findMinimumValue(root) << endl;
-            break;
-        case 4:
-            root = swapLeftRight(root);
-            cout << "Tree modified successfully." << endl;
-            break;
-        case 5:
-            cout << "Enter the value to search: ";
-            cin >> value;
-            if (searchValue(root, value))
-            {
-                cout << "Value found in the tree." << endl;
-            }
-            else
-            {
-                cout << "Value not found in the tree." << endl;
-            }
-            break;
-        case 0:
-            cout << "Exiting..." << endl;
-            break;
-        default:
-            cout << "Invalid choice. Please try again." << endl;
-            break;
-        }
-    } while (choice != 0);
-
+    cout<<"\n";
+    tree.mirror(tree.root);
+    tree.inorder(tree.root);
+   cout<<endl<< tree.longestpath(tree.root);
     return 0;
+
+
+    //check max height on every node
+    //update max variable
+
+    /*diameter
+    height */
 }
